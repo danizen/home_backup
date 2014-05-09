@@ -6,7 +6,8 @@ PREFIX=/usr/local/bin
 
 SCRIPTS=\
  rotate_backups\
- batch_backup
+ batch_backup\
+ auto_backup
 
 .PHONY: install
 

@@ -1,9 +1,9 @@
-# Home backup tools #
+# Home backup scripts #
 
-My set of scripts for backing up my Ubuntu laptop and my wife's macbook air 
+A set of scripts for backing up my Ubuntu laptop and my wife's macbook air 
 to a book-sized Linux that acts as my backup server.  
 
-## Authors ##
+## Author ##
 
 Dan Davis, 
 dansmood@gmail.com, 

@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+# Executive controller prevents running multiple copies of the batch_backup
+# at once and checks whether a new backup is needed by using a timestamp
+#
+MYDIR=`dirname $0`
+MYPROG=`basename $0`
+SOURCE_DIR=$HOME
+BACKUP_DIR=/home/backup/$USER
+
+# Check if another copy of this script is in-progress
+flock -w 5 $HOME/.backuplock
+if [ $? -ne 0 ]; then
+    echo "error: another copy of $MYPROG is running" 1>&2 
+    exit 1
+fi
+
+# TODO: Check whether it has been long enough since last
+# successful backup (cron does sort of handle this one)
+
+# Do a backup
+$MYDIR/batch_backup $SOURCE_DIR $BACKUP_DIR
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
+# Let's be clear about success
+echo "Success"
+exit 0
+

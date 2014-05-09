@@ -3,15 +3,18 @@
 My set of scripts for backing up my Ubuntu laptop and my wife's macbook air 
 to a book-sized Linux that acts as my backup server.  
 
+## Authors ##
+
+Dan Davis <dansmood@gmail.com>
+https://github.com/danizen
+
 ## Goal ##
 
 Silently and automatically back-up my and my wife's home directories to a
 backup server at home and also to the cloud.  These are backups to disk.
-
 Ignore snapshots or other synchronization because the goal here is to back-up
-unstructured files and data.
-
-Ignore system files because it is pretty easy to re-install Ubuntu or MacOS X.
+unstructured files and data.  Ignore system files because it is pretty easy to
+re-install Ubuntu or MacOS X.
 
 ## Constraints ##
 
@@ -34,26 +37,45 @@ Ignore system files because it is pretty easy to re-install Ubuntu or MacOS X.
 
 ## Backup Server Setup ##
 
+* Install `samba` and `samba-server`
 * Create a "backup" user on the backup server to host the backup share
-* Create a user on the backup server for each user home directory to back-up
-* In the home directory of the backup user, create a sub-directory for each
-  user to be backed up, owned by that user.
-* Configure Samba to allow mounts of the backup server
-* Setup a cloud backup of backup users home directory on the backup server
-* This cloud backup should not run as root
+* Create a user on the backup server for each user home directory to back-up.  It is easiest to make the uids match, but there are other ways.
+* In the home directory of the backup user, create a sub-directory for each user to be backed up, owned by that user.
+* Configure Samba to allow mounts of the backup user's home directory as share backup
+* Setup a cloud backup of the backup user's home directory on the backup server
+* This cloud backup should *not* run as root because we don't trust that cloud software vendor with root.
 
-__NOTE__: One option for security is to mount the backup user's home
- directory with encfs, so that the underlying files on disk are encrypted.  I've chosen to simply trust that SpiderOak is as private as is claimed.
+__NOTE__: I am using SpiderOak and their brand is privacy.   If you want to use
+someone else and get (even better) privacy you can mount the backup user's home
+directory with encfs, so that the underlying files on disk are encrypted.
+These encrypted files are the ones you then backup to the cloud.
 
 ## Client Setup ##
 
-* Install autofs and cifs-utils
-* Create a file `/etc/auto.smb.creds` with permissions 0600 with user/password for share.
-* Create a file `/etc/auto.smb`.   Mine looks like this:
+* Install `autofs` and `cifs-utils`
+* Create a file `/etc/auto.backup.creds` with permissions 0600 with user/password for the backup share.
+* Create a file `/etc/auto.backup`.   Mine looks like this:
+
+    /home/backup -fstype=cifs,credentials=/etc/auto.backup.creds ://tisa/backup
+
 * Edit `/etc/auto.master` to refer to it.  Here's the line that does it:
-* Create directory where the mount will occur and adjust permissions
-* Restart autofs and test
+
+    /-      /etc/auto.backup --timeout=60
+
+* Create directory where the mount will occur and adjust permissions:
+
+    mkdir /home/backup
+    chown dan:users /home/backup
+
+* Restart autofs and test the mount
+
+    /etc/init.d/autofs restart
+    ls /home/backup
+
 * Use `make install` to install this stuff in `/usr/local/bin` 
+
+    make install
+
 * Use cron to run `auto_backup` periodically.  My crontab looks like this:
 
 ## License ##

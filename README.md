@@ -5,7 +5,8 @@ to a book-sized Linux that acts as my backup server.
 
 ## Authors ##
 
-Dan Davis <dansmood@gmail.com>
+Dan Davis, 
+dansmood@gmail.com, 
 https://github.com/danizen
 
 ## Goal ##
@@ -14,7 +15,7 @@ Silently and automatically back-up my and my wife's home directories to a
 backup server at home and also to the cloud.  These are backups to disk.
 Ignore snapshots or other synchronization because the goal here is to back-up
 unstructured files and data.  Ignore system files because it is pretty easy to
-re-install Ubuntu or MacOS X.
+reinstall.
 
 ## Constraints ##
 
@@ -30,7 +31,7 @@ re-install Ubuntu or MacOS X.
 * If laptop is at home, the mount and therefore the listing works
 * Otherwise the script exits.
 * Assuming the script is still running, it locks a file and runs the backup
-* Backup uses rsync with --link-dest argument to do hard-links for files
+* Backup uses rsync with `--link-dest` argument to do hard-links for files
   that have not changed.
 * Script on server (running non-root) wakes up periodically and checks whether
   any new data must be backed up to the Cloud, and then does it.
@@ -56,25 +57,25 @@ These encrypted files are the ones you then backup to the cloud.
 * Create a file `/etc/auto.backup.creds` with permissions 0600 with user/password for the backup share.
 * Create a file `/etc/auto.backup`.   Mine looks like this:
 
-    /home/backup -fstype=cifs,credentials=/etc/auto.backup.creds ://tisa/backup
+        /home/backup -fstype=cifs,credentials=/etc/auto.backup.creds ://tisa/backup
 
 * Edit `/etc/auto.master` to refer to it.  Here's the line that does it:
 
-    /-      /etc/auto.backup --timeout=60
+        /-      /etc/auto.backup --timeout=60
 
 * Create directory where the mount will occur and adjust permissions:
 
-    mkdir /home/backup
-    chown dan:users /home/backup
+        mkdir /home/backup
+        chown dan:users /home/backup
 
 * Restart autofs and test the mount
 
-    /etc/init.d/autofs restart
-    ls /home/backup
+        /etc/init.d/autofs restart
+        ls /home/backup
 
 * Use `make install` to install this stuff in `/usr/local/bin` 
 
-    make install
+        make install
 
 * Use cron to run `auto_backup` periodically.  My crontab looks like this:
 
@@ -86,6 +87,6 @@ MIT License
 
 Using `rsync` this way is nothing new:
 
-* [http://www.mikerubel.org/computers/rsync_snapshots/](http://www.mikerubel.org/computers/rsync_snapshots/)
-* [http://www.math.ualberta.ca/imaging/rlbackup/](http://www.math.ualberta.ca/imaging/rlbackup/)
+* http://www.mikerubel.org/computers/rsync_snapshots/
+* http://www.math.ualberta.ca/imaging/rlbackup/
 

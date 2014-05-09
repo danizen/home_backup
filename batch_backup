@@ -1,0 +1,24 @@
+#!/bin/bash
+MYDIR=`dirname $0`
+
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 <source_dir> <backup_dir>" 1>&2
+    exit 1
+fi
+
+SOURCE_DIR=$1
+BACKUP_DIR=$2
+
+if [ ! -d $SOURCE_DIR ]; then
+    echo "error: no source directory  $SOURCE_DIR" 1>&2
+    exit 1
+fi
+if [ ! -d $BACKUP_DIR ]; then
+    echo "error: no backup directory $BACKUP_DIR" 1>&2
+    exit 1
+fi
+
+$MYDIR/rotate_backups "$BACKUP_DIR"
+rsync -a --delete "$SOURCE_DIR/" \
+  --link-dest="$BACKUP_DIR/backup.1/" \
+  "$BACKUP_DIR/backup.0/"

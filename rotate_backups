@@ -1,0 +1,27 @@
+#!/bin/bash
+# 
+# Moves old backups out of the way in the style of logrotate
+# Should really parameterize how many backups are taken
+#
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <backup_directory>" 1>&2
+    exit 1
+fi
+BACKUP_DIR=$1
+
+if [ ! -d "$BACKUP_DIR" ]; then
+    echo "Error: no directory $BACKUP_DIR" 1>&2
+    exit 1
+fi
+
+cd $BACKUP_DIR
+if [ -d backup.14 ]; then
+    rm -rf backup.14
+fi
+
+for x in `seq 14 -1 0`; do
+    if [ -d backup.$x ]; then
+	mv backup.$x backup.$((x+1))
+    fi
+done
+
